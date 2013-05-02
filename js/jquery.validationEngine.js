@@ -162,7 +162,7 @@
 			form.find('['+options.validateAttribute+'*=validate]').not(":disabled").each(function(){
 				var field = $(this);
 				if (options.prettySelect && field.is(":hidden"))
-				  field = form.find("#" + options.usePrefix + field.attr('id') + options.useSuffix);
+				  field = form.find("#" + options.usePrefix + field.prop('id') + options.useSuffix);
 				var prompt = methods._getPrompt(field);
 				var promptText = $(prompt).find(".formErrorContent").html();
 
@@ -202,9 +202,9 @@
 			 var closingtag;
 			 
 			 if($(this).is("form") || $(this).hasClass("validationEngineContainer")) {
-				 closingtag = "parentForm"+methods._getClassName($(this).attr("id"));
+				 closingtag = "parentForm"+methods._getClassName($(this).prop("id"));
 			 } else {
-				 closingtag = methods._getClassName($(this).attr("id")) +"formError";
+				 closingtag = methods._getClassName($(this).prop("id")) +"formError";
 			 }
 			 $('.'+closingtag).fadeTo(fadeDuration, 0.3, function() {
 				 $(this).parent('.formErrorOuter').remove();
@@ -262,7 +262,7 @@
 				var submitButton = $("#" + form.data("jqv_submitButton"));
 				if (submitButton){
 					if (submitButton.length > 0){
-						if (submitButton.hasClass("validate-skip") || submitButton.attr("data-validation-engine-skip") == "true")
+						if (submitButton.hasClass("validate-skip") || submitButton.prop("data-validation-engine-skip") == "true")
 							return true;
 					}
 				}
@@ -335,11 +335,11 @@
 			form.find('['+options.validateAttribute+'*=validate]').not(":disabled").each( function() {
 				var field = $(this);
 				var names = [];
-				if ($.inArray(field.attr('name'), names) < 0) {
+				if ($.inArray(field.prop('name'), names) < 0) {
 					errorFound |= methods._validateField(field, options);
 					if (errorFound && first_err==null)
 						if (field.is(":hidden") && options.prettySelect)
-							first_err = field = form.find("#" + options.usePrefix + methods._jqSelector(field.attr('id')) + options.useSuffix);
+							first_err = field = form.find("#" + options.usePrefix + methods._jqSelector(field.prop('id')) + options.useSuffix);
 						else {
 
 							//Check if we need to adjust what element to show the prompt on
@@ -353,7 +353,7 @@
 						}
 					if (options.doNotShowAllErrosOnSubmit)
 						return false;
-					names.push(field.attr('name'));
+					names.push(field.prop('name'));
 
 					//if option set, stop checking validation rules after one error is found
 					if(options.showOneMessage == true && errorFound){
@@ -431,7 +431,7 @@
 
 			var data = form.serialize();
 									var type = (options.ajaxFormValidationMethod) ? options.ajaxFormValidationMethod : "GET";
-			var url = (options.ajaxFormValidationURL) ? options.ajaxFormValidationURL : form.attr("action");
+			var url = (options.ajaxFormValidationURL) ? options.ajaxFormValidationURL : form.prop("action");
 									var dataType = (options.dataType) ? options.dataType : "json";
 			$.ajax({
 				type: type,
@@ -512,15 +512,15 @@
 		* @return false if field is valid (It is inversed for *fields*, it return false on validate and true on errors.)
 		*/
 		_validateField: function(field, options, skipAjaxValidation) {
-			if (!field.attr("id")) {
-				field.attr("id", "form-validation-field-" + $.validationEngine.fieldIdCounter);
+			if (!field.prop("id")) {
+				field.prop("id", "form-validation-field-" + $.validationEngine.fieldIdCounter);
 				++$.validationEngine.fieldIdCounter;
 			}
 
            if (!options.validateNonVisibleFields && (field.is(":hidden") && !options.prettySelect || field.parent().is(":hidden")))
 				return false;
 
-			var rulesParsing = field.attr(options.validateAttribute);
+			var rulesParsing = field.prop(options.validateAttribute);
 			var getRules = /validate\[(.*)\]/.exec(rulesParsing);
 
 			if (!getRules)
@@ -530,7 +530,7 @@
 
 			// true if we ran the ajax validation, tells the logic to stop messing with prompts
 			var isAjaxValidator = false;
-			var fieldName = field.attr("name");
+			var fieldName = field.prop("name");
 			var promptText = "";
 			var promptType = "";
 			var required = false;
@@ -721,7 +721,7 @@
 			}
 
 			if(field.is(":hidden") && options.prettySelect) {
-				field = form.find("#" + options.usePrefix + methods._jqSelector(field.attr('id')) + options.useSuffix);
+				field = form.find("#" + options.usePrefix + methods._jqSelector(field.prop('id')) + options.useSuffix);
 			}
 
 			if (options.isError && options.showPrompts){
@@ -808,7 +808,7 @@
 			 var alteredRule = rule;
 
 
-			 var element_classes = (field.attr("data-validation-engine")) ? field.attr("data-validation-engine") : field.attr("class");
+			 var element_classes = (field.prop("data-validation-engine")) ? field.prop("data-validation-engine") : field.prop("class");
 			 var element_classes_array = element_classes.split(" ");
 
 			 // Call the original validation method. If we are dealing with dates or checkboxes, also pass the form
@@ -833,16 +833,16 @@
 			var validityProp = /^custom\[.*\]$/.test(rule) ? methods._validityProp["custom"] : methods._validityProp[rule];
 			 // If there is a validityProp for this rule, check to see if the field has an attribute for it
 			if (validityProp != undefined) {
-				custom_message = field.attr("data-errormessage-"+validityProp);
+				custom_message = field.prop("data-errormessage-"+validityProp);
 				// If there was an error message for it, return the message
 				if (custom_message != undefined) 
 					return custom_message;
 			}
-			custom_message = field.attr("data-errormessage");
+			custom_message = field.prop("data-errormessage");
 			 // If there is an inline custom error message, return it
 			if (custom_message != undefined) 
 				return custom_message;
-			var id = '#' + field.attr("id");
+			var id = '#' + field.prop("id");
 			// If we have custom messages for the element's id, get the message for the rule from the id.
 			// Otherwise, if we have custom messages for the element's classes, use the first class message we find instead.
 			if (typeof options.custom_error_messages[id] != "undefined" &&
@@ -906,8 +906,8 @@
 				case "select-multiple":
 				default:
 					var field_val      = $.trim( field.val()                               );
-					var dv_placeholder = $.trim( field.attr("data-validation-placeholder") );
-					var placeholder    = $.trim( field.attr("placeholder")                 );
+					var dv_placeholder = $.trim( field.prop("data-validation-placeholder") );
+					var placeholder    = $.trim( field.prop("placeholder")                 );
 					if (
 						   ( !field_val                                    )
 						|| ( dv_placeholder && field_val == dv_placeholder )
@@ -927,7 +927,7 @@
 					}
 					// old validation style
 					var form = field.closest("form, .validationEngineContainer");
-					var name = field.attr("name");
+					var name = field.prop("name");
 					if (form.find("input[name='" + name + "']:checked").size() == 0) {
 						if (form.find("input[name='" + name + "']:visible").size() == 1)
 							return options.allrules[rules[i]].alertTextCheckboxe;
@@ -1279,7 +1279,7 @@
 		_maxCheckbox: function(form, field, rules, i, options) {
 
 			var nbCheck = rules[i + 1];
-			var groupname = field.attr("name");
+			var groupname = field.prop("name");
 			var groupSize = form.find("input[name='" + groupname + "']:checked").size();
 			if (groupSize > nbCheck) {
 				options.showArrow = false;
@@ -1301,7 +1301,7 @@
 		_minCheckbox: function(form, field, rules, i, options) {
 
 			var nbCheck = rules[i + 1];
-			var groupname = field.attr("name");
+			var groupname = field.prop("name");
 			var groupSize = form.find("input[name='" + groupname + "']:checked").size();
 			if (groupSize < nbCheck) {
 				options.showArrow = false;
@@ -1356,7 +1356,7 @@
 			 var extraData = rule.extraData;
 			 var extraDataDynamic = rule.extraDataDynamic;
 			 var data = {
-				"fieldId" : field.attr("id"),
+				"fieldId" : field.prop("id"),
 				"fieldValue" : field.val()
 			 };
 
@@ -1387,11 +1387,11 @@
 			 
 			 // If a field change event triggered this we want to clear the cache for this ID
 			 if (options.eventTrigger == "field") {
-				delete(options.ajaxValidCache[field.attr("id")]);
+				delete(options.ajaxValidCache[field.prop("id")]);
 			 }
 
 			 // If there is an error or if the the field is already validated, do not re-execute AJAX
-			 if (!options.isError && !methods._checkAjaxFieldStatus(field.attr("id"), options)) {
+			 if (!options.isError && !methods._checkAjaxFieldStatus(field.prop("id"), options)) {
 				 $.ajax({
 					 type: options.ajaxFormValidationMethod,
 					 url: rule.url,
@@ -1549,9 +1549,9 @@
 
 			// create the prompt
 			var prompt = $('<div>');
-			prompt.addClass(methods._getClassName(field.attr("id")) + "formError");
+			prompt.addClass(methods._getClassName(field.prop("id")) + "formError");
 			// add a class name to identify the parent form of the prompt
-			prompt.addClass("parentForm"+methods._getClassName(field.closest('form, .validationEngineContainer').attr("id")));
+			prompt.addClass("parentForm"+methods._getClassName(field.closest('form, .validationEngineContainer').prop("id")));
 			prompt.addClass("formError");
 
 			switch (type) {
@@ -1605,13 +1605,13 @@
 				prompt.addClass(options.addPromptClass);
 
             // Add custom prompt class defined in element
-            var requiredOverride = field.attr('data-required-class');
+            var requiredOverride = field.prop('data-required-class');
             if(requiredOverride !== undefined) {
                 prompt.addClass(requiredOverride);
             } else {
                 if(options.prettySelect) {
-                    if($('#' + field.attr('id')).next().is('select')) {
-                        var prettyOverrideClass = $('#' + field.attr('id').substr(options.usePrefix.length).substring(options.useSuffix.length)).attr('data-required-class');
+                    if($('#' + field.prop('id')).next().is('select')) {
+                        var prettyOverrideClass = $('#' + field.prop('id').substr(options.usePrefix.length).substring(options.useSuffix.length)).prop('data-required-class');
                         if(prettyOverrideClass !== undefined) {
                             prompt.addClass(prettyOverrideClass);
                         }
@@ -1624,8 +1624,8 @@
 			});
 			if(positionType === 'inline') {
 				prompt.addClass("inline");
-				if(typeof field.attr('data-prompt-target') !== 'undefined' && $('#'+field.attr('data-prompt-target')).length > 0) {
-					prompt.appendTo($('#'+field.attr('data-prompt-target')));
+				if(typeof field.prop('data-prompt-target') !== 'undefined' && $('#'+field.prop('data-prompt-target')).length > 0) {
+					prompt.appendTo($('#'+field.prop('data-prompt-target')));
 				} else {
 					field.after(prompt);
 				}
@@ -1722,8 +1722,8 @@
 		* @return undefined or the error prompt (jqObject)
 		*/
 		_getPrompt: function(field) {
-				var formId = $(field).closest('form, .validationEngineContainer').attr('id');
-			var className = methods._getClassName(field.attr("id")) + "formError";
+				var formId = $(field).closest('form, .validationEngineContainer').prop('id');
+			var className = methods._getClassName(field.prop("id")) + "formError";
 				var match = $("." + methods._escapeExpression(className) + '.parentForm' + methods._getClassName(formId))[0];
 			if (match)
 			return $(match);
@@ -1748,11 +1748,11 @@
 			var $body = $('body');
 			var rtl =
 				(field && field.hasClass('rtl')) ||
-				(field && (field.attr('dir') || '').toLowerCase()==='rtl') ||
+				(field && (field.prop('dir') || '').toLowerCase()==='rtl') ||
 				$document.hasClass('rtl') ||
-				($document.attr('dir') || '').toLowerCase()==='rtl' ||
+				($document.prop('dir') || '').toLowerCase()==='rtl' ||
 				$body.hasClass('rtl') ||
-				($body.attr('dir') || '').toLowerCase()==='rtl';
+				($body.prop('dir') || '').toLowerCase()==='rtl';
 			return Boolean(rtl);
 		},
 		/**
@@ -1944,7 +1944,7 @@
 	    _submitButtonClick: function(event) {
 	        var button = $(this);
 	        var form = button.closest('form, .validationEngineContainer');
-	        form.data("jqv_submitButton", button.attr("id"));
+	        form.data("jqv_submitButton", button.prop("id"));
 	    }
 		  };
 
